@@ -30,7 +30,7 @@ pip install --upgrade pip
 pip install -r requirements.txt
 ```
 
-1. Download dataset from [KITTI website](https://www.cvlibs.net/datasets/kitti/raw_data.php) and organize folder as shown below
+2. Download dataset from [KITTI website](https://www.cvlibs.net/datasets/kitti/raw_data.php) and organize folder as shown below
 ```
 ├── kitti 
 │  ├── 2011_09_26
@@ -45,7 +45,7 @@ pip install -r requirements.txt
 │  │  ├── 2011_09_26_0008_tracklets
 │  │  │  ├── tracklet_labels.xml
 ```
-2. Run the script [KITTI](scripts/kitti_dataset_analysis.py)
+3. Run the script [KITTI](scripts/kitti_dataset_analysis.py)
 ```
 python scripts/kitti_dataset_analysis.py
 ```
