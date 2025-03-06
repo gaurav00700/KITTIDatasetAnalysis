@@ -3,9 +3,9 @@ This repository containing the scripts for KITTI dataset analysis:
 - KITTI loader class for parsing data
 - Visualization tool
 
-## TODO:
+## TODOs
 - [ ] Implement pcd visualization
-- [ ] Function for saving files in output dir
+- [x] Function for saving files in output dir
 
 ### Preview of data
 

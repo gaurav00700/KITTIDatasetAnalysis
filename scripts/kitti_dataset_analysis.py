@@ -4,6 +4,7 @@ sys.path.insert(0, parent_dir) #add package path to python path
 import numpy as np
 import argparse
 import open3d as o3d
+import json
 import tqdm
 from collections import defaultdict
 from typing import Literal, Union, List
@@ -30,11 +31,15 @@ def add_parsers(args_list:list= None):
                         help='path to save output data')
     return parser.parse_args(args_list) if args_list else parser.parse_args() 
 
-def main(save_pcd:bool=False):
+def main(save_data:bool= False):
     #get argument parsers
     args = add_parsers()
     frame_ids=args.filter_frame
     kitti = KITTILoader(kitti_root=args.dataset_path, seq_name="0009")
+
+    # Prepare dirs
+    if not os.path.exists(args.data_io_path): 
+        os.makedirs(args.data_io_path)
 
     # Get the file paths of lidar, camera and gps data
     cam_02_imgs = kitti.load_images(camera_name='02',frame_ids=frame_ids)
@@ -78,9 +83,16 @@ def main(save_pcd:bool=False):
 
     # Visualize the image and annotations
     visualization.viz_img_bbox(annotation_dict, imgdata_dict, args.data_io_path)
+
+    # Save data to json file
+    if save_data:
+        save_path = os.path.join(args.data_io_path, f"annotations_2d_Cam02.json")
+        with open(save_path, "w", encoding="utf-8") as f:
+            json.dump(annotation_dict, f, indent=4 , cls=tools.NpEncoder)
+            print(f"Annotation data is saved at:{save_path}")
     
 if __name__ == '__main__':
-    main() 
+    main(save_data=True) 
 
 
 
