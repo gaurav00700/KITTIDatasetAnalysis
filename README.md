@@ -1,11 +1,15 @@
 # Dataset_analysis
 This repository containing the scripts for KITTI dataset analysis:
 - KITTI loader class for parsing data
-- Visualization 
+- Visualization tool
+
+## TODO:
+- [ ] Implement pcd visualization
+- [ ] Function for saving files in output dir
 
 ### Preview of data
 
-Cam-02 and Bounding boxes          |  Camera and LiDAR fusion
+Cam_02 and Bounding boxes          |  Camera and LiDAR fusion
 :-------------------------:|:-------------------------:
 <img src="assets/Img_bbox.png" style="display: block; margin-left: auto; margin-right: auto; max-width: 78%; height: auto;" >  |  <img src="assets/LiDAR_Cam_fusion.png" style="display: block; margin-left: auto; margin-right: auto; max-width: 75%; height: auto;">
 
@@ -46,9 +50,6 @@ pip install -r requirements.txt
 python scripts/kitti_dataset_analysis.py
 ```
 
-## TODO:
-- [ ] Implement pcd visualization
-- [ ] Function for saving files in output dir
 
 ## Folder structure
 
