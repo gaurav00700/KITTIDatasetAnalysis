@@ -64,9 +64,7 @@ def main(save_data:bool= False):
         bboxes_img = []
         if len(bboxes_velo) > 0:
             for bbox_velo, label in zip(bboxes_velo, labels_frame):
-                bbox_velo = np.row_stack((bbox_velo, np.ones(bbox_velo.shape[1])))
-                bbox_img = np.dot(T_velo_img2[:3,:], bbox_velo) # 3x8
-                bbox = (bbox_img/bbox_img[2:3,:])[:2] # Normalize by z, 3x8 -> 2x8
+                bbox = tools.points_transformation(bbox_velo.T, T_velo_img2)[:,:2].T    # (2,8)
                 x0, y0 = bbox[0].min(), bbox[1].min()
                 x1, y1 =  bbox[0].max(), bbox[1].max()
                 cx, xy, w, h = x0 + (x0+x1)/2, y0 + (y0+y1)/2, x1-x0, y1-y0
