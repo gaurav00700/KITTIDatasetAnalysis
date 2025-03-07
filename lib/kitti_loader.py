@@ -363,14 +363,14 @@ if __name__ == "__main__":
     
     # Visualize image and pcd fusion
     pcd_velo = tools.read_pcd(pcd_paths[frame_id]) # Lidar frame
-    pcd_img = tools.pcd_transformation(pcd_velo, np.vstack((T_velo_img, [0,0,0,1])))
+    pcd_img = tools.points_transformation(pcd_velo, np.vstack((T_velo_img, [0,0,0,1])))
     plt.scatter(pcd_img[:,0], pcd_img[:,1], s=2, c=pcd_velo[:,3])
     plt.xlim(0, img.shape[1])
     plt.ylim(img.shape[0], 0)
 
     # Visualize point cloud
     pcd = tools.read_pcd(pcd_paths[frame_id]) # Lidar frame
-    pcd_img = tools.pcd_transformation(pcd, T_velo_img)
+    pcd_img = tools.points_transformation(pcd, T_velo_img)
     vis = o3d.visualization.Visualizer()
     vis.create_window()
     tools.custom_visualization_o3d(vis, pcd_size=1.0)

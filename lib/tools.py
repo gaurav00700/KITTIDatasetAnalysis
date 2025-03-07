@@ -12,6 +12,7 @@ from scipy.spatial.transform import Rotation
 import warnings
 import open3d as o3d
 import math 
+import base64
 from typing import Literal, Union, List
 from pyquaternion import Quaternion
 from scipy.spatial import ConvexHull, Delaunay
@@ -438,7 +439,11 @@ def Rt_from_gps(lat, lon, roll, pitch, scale, alt=0.0, yaw=None):
     # Combine the translation and rotation into a homogeneous transform
     return R, t
 
-def create_3dbbox_mesh(corners_bbox, lines_boxes=None, line_color=[1, 0, 0]):
+def create_3dbbox_mesh(
+        corners_bbox:Union[np.ndarray, list], 
+        lines_boxes:Union[np.ndarray, list]=None, 
+        line_color:list=[1, 0, 0]
+        )->list:
     """Create a 3dbbox meshes using corner points
 
     Args:
@@ -469,7 +474,7 @@ def create_3dbbox_mesh(corners_bbox, lines_boxes=None, line_color=[1, 0, 0]):
     return bbox_meshes
 
 def add_geometry_o3d(vis, point_cloud_o3d=None, bbox_meshes=None):
-
+    """Add geometry to open3d visualization object"""
     # Add point cloud geometry:
     if point_cloud_o3d:
         vis.add_geometry(point_cloud_o3d)
@@ -479,9 +484,8 @@ def add_geometry_o3d(vis, point_cloud_o3d=None, bbox_meshes=None):
             vis.add_geometry(bbox_mesh, reset_bounding_box=False)
 
 def update_geometry_o3d(vis, point_cloud_o3d=None, bbox_meshes=None):
-    """
-    update open3d visualization geometery
-    """
+    """update open3d visualization geometery"""
+
     # update point cloud geometry:
     if point_cloud_o3d:
         vis.update_geometry(point_cloud_o3d)
@@ -491,15 +495,17 @@ def update_geometry_o3d(vis, point_cloud_o3d=None, bbox_meshes=None):
             vis.update_geometry(bbox_mesh)
 
 def remove_geometry(vis, meshes):
-    """
-    Remove the mesh geometry from o3d visualizer
-    """
+    """Remove the mesh geometry from o3d visualizer"""
     if meshes:
         for mesh in meshes:
             vis.remove_geometry(mesh, reset_bounding_box=False)
             # vis.clear_geometries(mesh, reset_bounding_box=False)
 
-def create_point_cloud_o3d(pcd_vehicle:np.ndarray, point_cloud_o3d:o3d.geometry=None, intensity_color:Union[str, list, None]=None):
+def create_point_cloud_o3d(
+        pcd_vehicle:np.ndarray, 
+        point_cloud_o3d:o3d.geometry=None, 
+        intensity_color:Union[str, list, None]=None
+        )->o3d.geometry:
     """ Create point open3d cloud object using point cloud points  in format (nx4)
 
     Args:
@@ -565,24 +571,28 @@ def custom_visualization_o3d(
     if background_colour:
         opt.background_color = np.asarray(background_colour) 
 
-def pcd_transformation(pcd:np.ndarray, T_mat:np.ndarray)-> np.ndarray:
+def points_transformation(points:np.ndarray, T_mat:np.ndarray)-> np.ndarray:
     """
-    Transform pcd (xyzi..) from source to target frame
+    Transform points (xyz..) from source to target frame
     Args:
-        pcd(np.array): point cloud array in shape nx4
+        points(np.array): Points array, shape nxm (xyz...)
         T_mat(np.array): Transformation array in shape 4x4
     Return:
-        xyzi_target(np.ndarray): transformed point cloud to target frame, shape nx4
+        points_target(np.ndarray): Pransformed points to target frame, shape nxm
     """
-    assert T_mat.shape == (4,4), "Shape of T_mat should be (4,4)"
+    assert T_mat.shape in [(4,4), (3,4)], "Shape of T_mat should be (4,4) or (3,4)"
 
-    xyz_4xn = np.column_stack((pcd[:, :3] , np.ones(pcd.shape[0]))).T  # 4xn
-    xyz_target = np.dot(T_mat, xyz_4xn)[:3, :].T # Transform to target frame, nx3
-    xyz_target /= xyz_target[:, 2:3] # Normalize by depth, nx3
-    xyzi_target = np.column_stack((xyz_target[:, :3], pcd[:, 3:])) # put back intensity and other attributes
-    return xyzi_target
+    if T_mat.shape == (3,4): # Projection matrix
+        T_mat = np.row_stack((T_mat, [0,0,0,1]))
+    
+    # Transform points
+    points_4xn = np.column_stack((points[:, :3] , np.ones(points.shape[0]))).T  # 4xn
+    points_target = np.dot(T_mat, points_4xn)[:3, :].T # Transform to target frame, nx3
+    points_target /= points_target[:, 2:3] # Normalize by depth, nx3
+    points_target = np.column_stack((points_target[:, :3], points[:, 3:])) # put back intensity and other attributes
+    return points_target
 
-def get_bbox3d_corner_points(position, size, rotation_quaternion):
+def get_bbox3d_corner_points(position:list, size:list, rotation_quaternion:np.ndarray)-> list:
     """Create 3d bounding boxes corner points using position, size and orientation
 
     args:
@@ -622,7 +632,7 @@ def get_bbox3d_corner_points(position, size, rotation_quaternion):
 
     return corner_points
 
-def check_in_hull(point, hull):
+def check_in_hull(point:np.ndarray, hull):
     """Check if pcd points (`p`) in convex hull or not
     `p` should be a `NxK` coordinates of `N` points in `K` dimensions
     `hull` is either a scipy.spatial.Delaunay object or the `MxK` array of the
@@ -708,5 +718,5 @@ def read_pcd(file_path:str) -> np.ndarray:
     elif '.npy' in os.path.basename(file_path):
         pcd = np.load(file_path).astype(np.float32) # read .npy file
     else:
-        raise "Unsupported pcd format"
+        raise TypeError("Unsupported pcd format")
     return pcd
