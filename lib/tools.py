@@ -720,3 +720,32 @@ def read_pcd(file_path:str) -> np.ndarray:
     else:
         raise TypeError("Unsupported pcd format")
     return pcd
+
+def resize_image_max_dim(image:np.ndarray, max_dim=720)->np.ndarray:
+    """
+    Resizes an image to fit within a maximum dimension while preserving its aspect ratio.
+    
+    :param image: The input image (numpy array).
+    :param max_dim: Maximum allowed dimension for the height or width (default is 720).
+    :return: A resized version of the image that fits within the specified maximum dimension.
+    """
+    # Get the current dimensions of the image
+    height, width = image.shape[:2]
+    
+    # Calculate new dimensions while maintaining aspect ratio
+    if width > max_dim:
+        new_width = max_dim
+        new_height = int(height * (new_width / width))
+    else:
+        new_width = width
+        new_height = height
+    
+    # Ensure the new height does not exceed the maximum dimension
+    if new_height > max_dim:
+        new_height = max_dim
+        new_width = int(width * (new_height / height))
+    
+    # Resize the image to fit within the constraint while maintaining aspect ratio
+    resized_img = cv2.resize(image, (new_width, new_height)) 
+
+    return resized_img

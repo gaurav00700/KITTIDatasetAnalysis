@@ -89,6 +89,9 @@ def viz_img_bbox(
 
             # Add labels for Prediction and Ground Truth
             cv2.putText(img, 'Ground Truth', (10, 40), cv2.FONT_HERSHEY_SIMPLEX, 0.5, color_gt, 2)
+
+            # Put frame number on the image
+            cv2.putText(img, f'Frame ID: {img_id}', (10, 60), cv2.FONT_HERSHEY_SIMPLEX, 0.5, [0, 0, 0], 2)
             
             # Show the image
             cv2.imshow('Detection', img)

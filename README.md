@@ -1,4 +1,4 @@
-# Dataset_analysis
+# Overview
 This repository containing the scripts for KITTI dataset analysis:
 - KITTI loader class for parsing data
 - Interactive Visualization tool
@@ -13,7 +13,7 @@ Cam_02 and Bounding boxes          |  Camera and LiDAR fusion
 :-------------------------:|:-------------------------:
 <img src="assets/Img_bbox.png" style="display: block; margin-left: auto; margin-right: auto; max-width: 78%; height: auto;" >  |  <img src="assets/LiDAR_Cam_fusion.png" style="display: block; margin-left: auto; margin-right: auto; max-width: 75%; height: auto;">
 
-## Getting started
+## Setup and Usage
 1. Setup the environment
 ```
 # Clone the repo
